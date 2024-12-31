@@ -33,7 +33,7 @@ String SendText(int Choix1, int Choix2, int Choix3, int Choix4, int Choix5, int 
   pageWeb += ".bar-container {\n";
   pageWeb += "  background-color: #aaa;\n";
   pageWeb += "  border-radius: 5px;\n";
-  pageWeb += "  overflow: hidden;\n";
+  pageWeb += "  overfHIGH: hidden;\n";
   pageWeb += "}\n";
 
   pageWeb += ".bar {\n";
