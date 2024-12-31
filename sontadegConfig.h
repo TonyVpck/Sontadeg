@@ -1,4 +1,4 @@
-String SendConfig(String NomduReseau, String MotdePasse, int DelaiInterReponse, int DelaiAntiSpam, int SeuilSpamBtn, int ToleranceSpam, int MultiReponse) {
+String SendConfig(String NomduReseau, String MotdePasse, int DelaiInterReponse, int DelaiAntiSpam, int SeuilSpamBtn, int ToleranceSpam, int MultiReponse, int Red, int Green, int Blue, int LedActive, int BoutonAnim) {
   String pageWeb = "<!DOCTYPE html><html lang=\"fr\">\n";
   pageWeb += "<head>\n";
   pageWeb += "<meta charset=\"UTF-8\">\n";
@@ -166,11 +166,11 @@ String SendConfig(String NomduReseau, String MotdePasse, int DelaiInterReponse, 
   pageWeb += "</div>\n";
 
   pageWeb += "<form action='/savereturn' method='post'>\n";
-  pageWeb += "<div class='form-container'>\n";  // Nouveau conteneur pour centrer le formulaire
+  pageWeb += "<div class='form-container'>\n";
   pageWeb += "<h2>Configuration réseau</h2>\n";
 
   pageWeb += "<div class='container'>\n";
-  pageWeb += "<label class='label'>Nom du réseau</label>\n";
+  pageWeb += "<label class='label tooltip'>Nom du réseau<span class='tooltiptext'>Nom du point wifi et de l'adresse de la page web X.local</span></label>\n";
   pageWeb += "<input type='text' name='NomduReseau' class='editable' value='" + NomduReseau + "'>\n";
   pageWeb += "</div>\n";
 
@@ -204,6 +204,33 @@ String SendConfig(String NomduReseau, String MotdePasse, int DelaiInterReponse, 
   pageWeb += "<div class='container'>\n";
   pageWeb += "<label class='label tooltip'>Temps de réactivation<span class='tooltiptext'>Temps avant de pouvoir recliquer après qu'un spam ou une réponse de trop soit détecté (en milliseconde).</span></label>\n";
   pageWeb += "<input type='number' name='DelaiAntiSpam' class='editable' value='" + String(DelaiAntiSpam) + "'>\n";
+  pageWeb += "</div>\n";
+
+  pageWeb += "<h2>Gestion des LEDs</h2>\n";
+
+  pageWeb += "<div class='container'>\n";
+  pageWeb += "<label class='label tooltip'>Activer les leds<span class='tooltiptext'>Leds éteintes à 0, allumées à 1. Si vous êtes sur batterie, nous vous conseillons d'éteindre les leds</span></label>\n";
+  pageWeb += "<input type='number' name='LedActive' class='editable' value='" + String(LedActive) + "'>\n";
+  pageWeb += "</div>\n";
+
+  pageWeb += "<div class='container'>\n";
+  pageWeb += "<label class='label tooltip'>Boutons réactifs<span class='tooltiptext'>Animation lors de l'appui des boutons.</span></label>\n";
+  pageWeb += "<input type='number' name='BoutonAnim' class='editable' value='" + String(BoutonAnim) + "'>\n";
+  pageWeb += "</div>\n";
+
+  pageWeb += "<div class='container'>\n";
+  pageWeb += "<label class='label tooltip'>Lumière rouge<span class='tooltiptext'>Taux de rouge dans les leds (255 max).</span></label>\n";
+  pageWeb += "<input type='number' name='Red' class='editable' value='" + String(Red) + "'>\n";
+  pageWeb += "</div>\n";
+
+  pageWeb += "<div class='container'>\n";
+  pageWeb += "<label class='label tooltip'>Lumière verte<span class='tooltiptext'>Taux de vert dans les leds (255 max).</span></label>\n";
+  pageWeb += "<input type='number' name='Green' class='editable' value='" + String(Green) + "'>\n";
+  pageWeb += "</div>\n";
+
+  pageWeb += "<div class='container'>\n";
+  pageWeb += "<label class='label tooltip'>Lumière bleue<span class='tooltiptext'>Taux de bleue dans les leds (255 max).</span></label>\n";
+  pageWeb += "<input type='number' name='Blue' class='editable' value='" + String(Blue) + "'>\n";
   pageWeb += "</div>\n";
   pageWeb += "</div>\n";
 
