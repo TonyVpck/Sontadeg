@@ -26,13 +26,15 @@ String MotdePasse = "";           // Mot de passe du réseau wifi du sondage
 // La configuration de votre réseau wifi ne se fera pas (ni mot de passe, ni nom de réseau !).
 //----------------------------------------------//
 
-// Bibliotheque : Gestion du Wifi du NodeMCUv3 (a installer)
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+// Bibliotheque : Gestion du Wifi de l'ESP32 (a installer)
+#include <WiFi.h>
+#include <WebServer.h>
 #include <DNSServer.h>
+#include <ESPmDNS.h>
 #include <Wire.h>
 #include <WiFiClient.h>
 #include <Effortless_SPIFFS.h>
+#include <FastLED.h>
 
 #include "SontadegRoot.h"
 #include "SontadegConfig.h"
@@ -47,21 +49,44 @@ int SeuilSpamBtn = 250;
 int MultiReponse = 0;
 int DelaiInterReponse = 2500;
 
+// gestion de l'antispam
+unsigned long antiSpamStartTime = 0;
+bool antiSpamActive = false;
+
+// Configuration du bandeau led
+#define LED_PIN 2
+#define NUM_LEDS 120
+#define LED_TYPE WS2812
+#define COLOR_ORDER GRB
+
+// Variables des leds
+int LedActive = 1;    // Variable pour activer/désactiver les LEDs
+int BoutonAnim = 1;   // Variable pour activer/désactiver les animations boutons
+uint8_t Red = 255;    // Composante rouge (0-255)
+uint8_t Green = 255;  // Composante verte (0-255)
+uint8_t Blue = 255;   // Composante bleue (0-255)
+
+CRGB leds[NUM_LEDS];
+bool ledAnimationActive = false;
+unsigned long animStart = 0;
+uint8_t Brightness = 255;  // Luminosité des leds
+int animTempo = 350;       // Durée totale de l'animation
+
 // Creation du serveur web
-ESP8266WebServer ServeurWebSondage(80);
+WebServer ServeurWebSondage(80);
 DNSServer dnsServer;
 
 // Creation d'un systeme de sauvegarde des donnees
 eSPIFFS fileSystem;
 
 // Declaration des Variables
-int BoutonReset = 2;
-int BoutonA = 0;
-int BoutonB = 4;
-int BoutonC = 5;
-int BoutonD = 13;
-int BoutonE = 12;
-int BoutonF = 14;
+int BoutonReset = 15;
+int BoutonA = 13;
+int BoutonB = 12;
+int BoutonC = 14;
+int BoutonD = 27;
+int BoutonE = 26;
+int BoutonF = 25;
 
 // Variables pour stocker les resultats du sondage (au total 6, une par bouton sondage)
 int Choix1, Choix2, Choix3, Choix4, Choix5, Choix6;
@@ -100,8 +125,29 @@ void setup() {
 
   loadSave();
   configDuWifi();
+
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  FastLED.setBrightness(Brightness);
+
+  // Animation de démarrage (si les leds sont actives)
+  if (LedActive == 1) {
+    fill_solid(leds, NUM_LEDS, CRGB::Black);  // Éteindre toutes les LEDs
+    FastLED.show();
+
+    for (int introLed = 0; introLed <= 255; introLed++) {
+      FastLED.setBrightness(introLed);  // Allumer progressivement les LEDs
+      fill_solid(leds, NUM_LEDS, CRGB(Red, Green, Blue));
+      FastLED.show();
+      delay(10);
+    }
+    FastLED.setBrightness(Brightness);
+  }
+  configLedColor();
+  Serial.println("Chargement des données du sondage : ");
   MonitorCount();
+  Serial.println("Sontadeg démarré !");
 }
+
 
 //- Attente d'une action utilisateur ------------------------//
 //-----------------------------------------------------------//
@@ -109,6 +155,7 @@ void setup() {
 void loop() {
   dnsServer.processNextRequest();
   ServeurWebSondage.handleClient();
+  ledAnimation();
 
   currentTime = millis();  // Met à jour la période d'appui du bouton actuel
 
@@ -164,14 +211,17 @@ void configDuWifi() {
   WiFi.softAP(NomduReseau, MotdePasse);
   IPAddress monIP = WiFi.softAPIP();
 
-  Serial.println();
-  Serial.println("SONTADEG - Borne d'enquête public");
-  Serial.print("Adresse IP de ce Point d'Accès : ");
-  Serial.println(monIP);
-
   dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
   dnsServer.start(53, "*", local_IP);
 
+  // Initialiser le DNS
+  if (!MDNS.begin(NomduReseau)) {
+    Serial.println("Erreur lors du démarrage de MDNS");
+    return;
+  }
+
+  // démarrer le service HTTP
+  MDNS.addService("http", "tcp", 80);
   ServeurWebSondage.on("/", handle_OnConnect);  // Page principale du sondage
   ServeurWebSondage.on("/config", handle_Config);
   ServeurWebSondage.on("/savetext", HTTP_POST, handleFormText);
@@ -179,7 +229,15 @@ void configDuWifi() {
   ServeurWebSondage.on("/downloadcsv", HTTP_GET, handleDownloadCSV);
   ServeurWebSondage.onNotFound(handle_OnConnect);
   ServeurWebSondage.begin();
-  Serial.println("Serveur HTTP démarré");
+
+
+  Serial.println();
+  Serial.println("SONTADEG - Borne d'enquête public");
+  Serial.print("Adresse du Point d'Accès : ");
+  Serial.print(NomduReseau);
+  Serial.print(".local");
+  Serial.print(" || ");
+  Serial.println(monIP);
   return;
 }
 
@@ -205,16 +263,28 @@ void MonitorCount() {
 //-----------------------------------------------------------//
 
 void checkButtonPress(int buttonIndex, const char *fileName, int &caseCount) {
+  // Déclencher le feedback LED pour tout appui de bouton
+  ledAnimationActive = true;
+  animStart = millis();
+  Brightness = 255;
+  // Si l'anti-spam est actif, vérifier si le délai est écoulé
+  if (antiSpamActive) {
+    if (millis() - antiSpamStartTime >= DelaiAntiSpam) {
+      antiSpamActive = false;
+    } else {
+      return;  // Ignore l'appui du bouton pendant la période d'anti-spam
+    }
+  }
 
   Serial.print("temps interbouton ");
   Serial.println(currentTime - previousTime);
 
   //- Spam de rapidité ! -//
   if (currentTime - previousTime <= SeuilSpamBtn) {
-    MultiClicCount = 0;                                     // Remet le compteur de réponse multiple à 0
+    MultiClicCount = 0;
     Serial.println("SPAM (spam rapidité)");
 
-    if (ToleranceSpam == 0) {                               // Si la Tolerance 0 est activée, choisit le précédent bouton appuyé
+    if (ToleranceSpam == 0) {
       switch (previousButton) {
         case 0:
           ToleranceMalus(0, "/SondageA.txt", Choix1);
@@ -236,19 +306,22 @@ void checkButtonPress(int buttonIndex, const char *fileName, int &caseCount) {
           break;
       }
     }
-    delay(DelaiAntiSpam);                                    // Se met en anti-spam et bloque les boutons pour un temps
+    // Activation de l'anti-spam
+    antiSpamActive = true;
+    antiSpamStartTime = millis();
+    return;
   }
 
   //- Spam de répétition + réponses mutliples -//
   if ((currentTime - previousTime >= SeuilSpamBtn) && (currentTime - previousTime <= DelaiInterReponse)) {
-    MultiClicCount++;                                        // Ajoute 1 au nombre de réponse multiple
+    MultiClicCount++;
 
     // Spam de répétition
-    if (previousButton == buttonIndex) {                     // Ajoute l'appui du bouton si le seuil de réponses multiples n'est pas dépassé
-      MultiClicCount = 0;                                    // Remet le compteur de réponse multiple à 0
+    if (previousButton == buttonIndex) {
+      MultiClicCount = 0;
       Serial.println("SPAM (répétition)");
 
-      if (ToleranceSpam == 0) {                              // Si la Tolerance 0 est activée, choisit le précédent bouton appuyé
+      if (ToleranceSpam == 0) {
         switch (previousButton) {
           case 0:
             ToleranceMalus(0, "/SondageA.txt", Choix1);
@@ -270,12 +343,15 @@ void checkButtonPress(int buttonIndex, const char *fileName, int &caseCount) {
             break;
         }
       }
-      delay(DelaiAntiSpam);                                     // Se met en anti-spam et bloque les boutons pour un temps
+      // Activation de l'anti-spam
+      antiSpamActive = true;
+      antiSpamStartTime = millis();
+      return;
     }
 
     // Réponse multiple et acceptée
-    if (MultiClicCount <= (MultiReponse - 1)) {                 // Ajoute l'appui du bouton si le seuil de réponses multiples n'est pas dépassé
-      caseCount++;                                              // Ajoute +1 à l'appuie du bouton et sauvegarde la data
+    if (MultiClicCount <= (MultiReponse - 1)) {
+      caseCount++;
       previousButton = buttonIndex;
       Serial.print("Bouton ");
       Serial.print(buttonIndex);
@@ -284,16 +360,19 @@ void checkButtonPress(int buttonIndex, const char *fileName, int &caseCount) {
       MonitorCount();
 
       // Trop de réponses multiples
-    } else if (MultiClicCount >= (MultiReponse - 1)) {         // Si une réponse de trop est ajoutée aux réponses multiples, l'anti-spam s'active
+    } else if (MultiClicCount >= (MultiReponse - 1)) {
       Serial.println("Trop de réponses");
-      delay(DelaiAntiSpam);                                    // Se met en anti-spam et bloque les boutons pour un temps
+      // Activation de l'anti-spam
+      antiSpamActive = true;
+      antiSpamStartTime = millis();
+      return;
     }
   }
 
   //- Appui unique acceptée -//
   if (currentTime - previousTime >= DelaiInterReponse) {
-    MultiClicCount = 0;                                        // Remet le compteur de réponse multiple à 0
-    caseCount++;                                               // Ajoute +1 à l'appuie du bouton et sauvegarde la data
+    MultiClicCount = 0;
+    caseCount++;
     Serial.print("Bouton ");
     Serial.print(buttonIndex);
     Serial.println(" appuyé !");
@@ -301,10 +380,9 @@ void checkButtonPress(int buttonIndex, const char *fileName, int &caseCount) {
     MonitorCount();
   }
 
-  previousButton = buttonIndex;                               // Stocke le numéro du bouton précédement appui
-  previousTime = currentTime;                                 // Stocke la période d'appui du bouton précédent
+  previousButton = buttonIndex;
+  previousTime = currentTime;
 }
-
 
 void checkResetButton() {
   if (digitalRead(BoutonReset) == LOW) {
@@ -312,7 +390,7 @@ void checkResetButton() {
       resetActive = true;
       resetStartTime = millis();
     } else {
-      if (millis() - resetStartTime >= 5000) {               // Vérifie si le bouton est maintenu pendant 5 secondes
+      if (millis() - resetStartTime >= 5000) {  // Vérifie si le bouton est maintenu pendant 5 secondes
         Choix1 = 0;
         Choix2 = 0;
         Choix3 = 0;
@@ -328,7 +406,8 @@ void checkResetButton() {
         fileSystem.saveToFile("/SondageE.txt", Choix5);
         fileSystem.saveToFile("/SondageF.txt", Choix6);
         fileSystem.saveToFile("/MotdePasse.txt", MotdePasse);
-
+        
+        Serial.println();
         Serial.println("Les variables et mot de passe ont été remis à zéro.");
         MonitorCount();
         resetActive = false;
@@ -348,7 +427,6 @@ void ToleranceMalus(int previousButton, const char *fileName, int &caseCount) {
   MonitorCount();
 }
 
-
 //- Liens dans les pages web de Sontadeg --------------------//
 //-----------------------------------------------------------//
 
@@ -357,19 +435,16 @@ void handle_OnConnect() {
 }
 
 void handle_Config() {
-
   updateConfig();
-  ServeurWebSondage.send(200, "text/html", SendConfig(NomduReseau, MotdePasse, DelaiInterReponse, DelaiAntiSpam, SeuilSpamBtn, ToleranceSpam, MultiReponse));
+  ServeurWebSondage.send(200, "text/html", SendConfig(NomduReseau, MotdePasse, DelaiInterReponse, DelaiAntiSpam, SeuilSpamBtn, ToleranceSpam, MultiReponse, Red, Green, Blue, LedActive, BoutonAnim));
 }
 
 void handleFormText() {
-
   updateText();
   ServeurWebSondage.send(200, "text/html", SendText(Choix1, Choix2, Choix3, Choix4, Choix5, Choix6, question, texteA, texteB, texteC, texteD, texteE, texteF));
 }
 
 void handleSaveConfig() {
-
   updateConfig();
   ServeurWebSondage.send(200, "text/html", SendText(Choix1, Choix2, Choix3, Choix4, Choix5, Choix6, question, texteA, texteB, texteC, texteD, texteE, texteF));
 }
@@ -417,6 +492,12 @@ void loadSave() {
   fileSystem.openFromFile("/SeuilSpamBtn.txt", SeuilSpamBtn);
   fileSystem.openFromFile("/ToleranceSpam.txt", ToleranceSpam);
   fileSystem.openFromFile("/MultiReponse.txt", MultiReponse);
+
+  fileSystem.openFromFile("/Red.txt", Red);
+  fileSystem.openFromFile("/Green.txt", Green);
+  fileSystem.openFromFile("/Blue.txt", Blue);
+  fileSystem.openFromFile("/LedActive.txt", LedActive);
+  fileSystem.openFromFile("/LedActive.txt", BoutonAnim);
 }
 
 void updateConfig() {
@@ -448,6 +529,27 @@ void updateConfig() {
     MultiReponse = ServeurWebSondage.arg("MultiReponse").toInt();
     fileSystem.saveToFile("/MultiReponse.txt", MultiReponse);
   }
+  if (ServeurWebSondage.hasArg("Red")) {
+    Red = ServeurWebSondage.arg("Red").toInt();
+    fileSystem.saveToFile("/Red.txt", Red);
+  }
+  if (ServeurWebSondage.hasArg("Green")) {
+    Green = ServeurWebSondage.arg("Green").toInt();
+    fileSystem.saveToFile("/Green.txt", Green);
+  }
+  if (ServeurWebSondage.hasArg("Blue")) {
+    Blue = ServeurWebSondage.arg("Blue").toInt();
+    fileSystem.saveToFile("/Blue.txt", Blue);
+  }
+  if (ServeurWebSondage.hasArg("LedActive")) {
+    LedActive = ServeurWebSondage.arg("LedActive").toInt();
+    fileSystem.saveToFile("/LedActive.txt", LedActive);
+  }
+  if (ServeurWebSondage.hasArg("BoutonAnim")) {
+    BoutonAnim = ServeurWebSondage.arg("BoutonAnim").toInt();
+    fileSystem.saveToFile("/BoutonAnim.txt", BoutonAnim);
+  }
+  configLedColor();  // Met à jour la couleur des LEDs après changement de configuration
 }
 
 void updateText() {
@@ -478,5 +580,45 @@ void updateText() {
   if (ServeurWebSondage.hasArg("question")) {
     question = ServeurWebSondage.arg("question");
     fileSystem.saveToFile("/Question.txt", question);
+  }
+}
+
+//- Gestion de la bande LED de Sontadeg ----------//
+//------------------------------------------------//
+
+// Mettre à jour la couleur des LEDs
+void configLedColor() {
+  if (LedActive == 1) {
+    fill_solid(leds, NUM_LEDS, CRGB(Red, Green, Blue));
+  } else {
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
+  }
+  FastLED.show();
+}
+
+// Animation des LEDs lors d'un appui
+void ledAnimation() {
+  if (ledAnimationActive && LedActive == 1 && BoutonAnim == 1) {
+    unsigned long animProgress = millis() - animStart;
+
+    if (animProgress < animTempo) {
+      // Première moitié : extinction
+      if (animProgress < animTempo / 2) {
+        Brightness = 255 - (animProgress * 510 / animTempo);
+      }
+      // Deuxième moitié : allumage
+      else {
+        Brightness = (animProgress - animTempo / 2) * 510 / animTempo;
+      }
+
+      FastLED.setBrightness(Brightness);
+      fill_solid(leds, NUM_LEDS, CRGB(Red, Green, Blue));
+      FastLED.show();
+    } else {
+      // Animation terminée
+      ledAnimationActive = false;
+      FastLED.setBrightness(255);
+      configLedColor();
+    }
   }
 }
