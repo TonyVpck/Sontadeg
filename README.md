@@ -8,8 +8,7 @@ Logoden biniou degemer mat an penn ar bed avel atav vi tomm boultrenn c’hann, 
 
 # Installation
 
-[Page de Sontadeg]([http://a.com](https://tonyvpck.github.io/Sontadeg/
-)
+[Page de Sontadeg](https://tonyvpck.github.io/Sontadeg/)
 
 ## téléverser depuis le naviguateur
 ## montage
