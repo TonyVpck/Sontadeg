@@ -5,6 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sontadeg</title>
+
+    <!-- Inclusion du script officiel ESP Web Tools -->
+    <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,6 +42,33 @@
             text-align: center;
         }
 
+        /* Style du bouton d'installation */
+        .flash-container {
+            margin-top: 20px;
+        }
+
+        .btn-flash {
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-flash:hover {
+            background-color: #0056b3;
+        }
+
+        .unsupported-msg {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
         footer {
             text-align: center;
             padding: 10px 0;
@@ -61,8 +92,17 @@
                 <rect x="8.07" y="8.91" width="360.86" height="99.17" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.32"/>
             </svg>
         </div>
+
         <div class="text-box">
             <p>Logoden biniou degemer mat an penn ar bed avel atav vi tomm boultrenn c’hann, Arzhal stal prest c’hazh marennañ nebeutoc’h ganin.</p>
+        </div>
+
+        <!-- Bouton d'installation Web Serial -->
+        <div class="flash-container">
+            <esp-web-install-button manifest="manifest.json">
+                <button slot="activate" class="btn-flash">⚡ Flasher la borne (ESP32-S3)</button>
+                <span slot="unsupported" class="unsupported-msg">Votre navigateur ne prend pas en charge l'API Web Serial (utilisez Chrome, Edge ou Opera sur ordinateur).</span>
+            </esp-web-install-button>
         </div>
     </div>
 
