@@ -6,7 +6,7 @@
       "chipFamily": "ESP32-S3",
       "parts": [
         {
-          "path": "https://github.com/TonyVpck/Sontadeg/releases/download/v1.2/Sontadeg_fr.bin",
+          "path": "https://raw.githubusercontent.com/TonyVpck/Sontadeg/main/Sontadeg_fr.bin",
           "offset": 0
         }
       ]
