@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#3D3D3D">
     <title>Sontadeg – Borne de sondage anonyme</title>
 
     <style>
@@ -11,10 +11,12 @@
             --bg: #3D3D3D;
             --fg: #ffffff;
             --muted: #b8b8b8;
-            --border: #808080;
+            --border: #707070;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -22,87 +24,193 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: var(--bg);
+            background: var(--bg);
             color: var(--fg);
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: system-ui, -apple-system, "Segoe UI",
+                         Roboto, Arial, sans-serif;
             font-weight: 300;
-            line-height: 1.65;
+            line-height: 1.6;
         }
 
         main {
             flex: 1;
             width: 100%;
-            max-width: 560px;
-            padding: 64px 24px 40px;
+            max-width: 680px;
+            padding: 56px 24px 48px;
+            margin: auto;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
         }
-
+        
         .logo {
             width: 100%;
-            max-width: 300px;
-            margin-bottom: 40px;
+            max-width: 270px;
+            margin-bottom: 28px;
         }
 
+        .logo svg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        
         .summary {
-            margin: 0 0 40px;
+            max-width: 490px;
+            margin: 0 0 36px;
             color: var(--muted);
-            font-size: 15px;
+            font-size: 14px;
             text-align: center;
         }
 
-        .btn {
-            display: inline-flex;
+        .steps {
+            width: 80%;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 4px;
+        }
+
+        .step {
+            min-width: 0;
+            aspect-ratio: 1 / 1;
+            padding: 16px 10px 14px;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            padding: 13px 28px;
-            font-family: inherit;
-            font-size: 13px;
-            font-weight: 400;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            text-decoration: none;
+            justify-content: center;
+            gap: 8px;
             color: var(--fg);
-            border: 1px solid var(--border);
-            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+            text-align: center;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition:
+                background-color 0.15s ease,
+                color 0.15s ease,
+                border-color 0.15s ease;
         }
 
-        .btn svg {
-            height: 18px;
-            width: auto;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 1.62px;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .btn:hover,
-        .btn:focus-visible {
+        .step:hover,
+        .step:focus-visible {
             background: var(--fg);
             color: var(--bg);
             border-color: var(--fg);
             outline: none;
         }
 
-        footer {
-            padding: 0 24px 32px;
+        .step-icon {
+            width: 100%;
+            max-width: 100px;
+            aspect-ratio: 119 / 123;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2px;
+        }
+
+        .step-icon svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+        
+        .step-number {
             color: var(--muted);
-            font-size: 12px;
+            font-size: 11px;
+            letter-spacing: 0.12em;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .step-description {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .step:hover .step-number,
+        .step:hover .step-description,
+        .step:focus-visible .step-number,
+        .step:focus-visible .step-description {
+            color: #555;
+        }
+        
+        footer {
+            width: 100%;
+            padding: 0 24px 28px;
+            color: var(--muted);
+            font-size: 11px;
             letter-spacing: 0.03em;
             text-align: center;
         }
 
-        footer p { margin: 0; }
+        footer p {
+            margin: 0;
+        }
+
+        @media (max-width: 480px) {
+            main {
+                padding: 40px 16px 36px;
+            }
+
+            .logo {
+                max-width: 230px;
+            }
+
+            .summary {
+                font-size: 13px;
+                margin-bottom: 28px;
+            }
+
+            .steps {
+                width: 100%;
+                gap: 2px;
+            }
+
+            .step {
+                padding: 10px 5px;
+                gap: 6px;
+            }
+
+            .step-icon {
+                max-width: 76px;
+            }
+
+            .step-title {
+                font-size: 12px;
+            }
+
+            .step-description {
+                font-size: 10px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .step {
+                transition: none;
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <main>
+        
         <div class="logo">
-            <svg viewBox="0 0 377 117" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.32" role="img" aria-label="Sontadeg">
+            <svg viewBox="0 0 377 117"
+                 fill="none"
+                 stroke="#fff"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 stroke-width="2.32"
+                 role="img"
+                 aria-label="Sontadeg">
                 <path d="M92.09,70.04c1.62,3.83,5.68,6.32,11.02,6.32,6.9,0,11.07-4.29,11.07-9.45,0-11.65-21.28-9.91-21.28-21.04,0-4.58,3.59-8.93,10.67-8.93,4.99,0,8.06,2.2,9.45,5.22"/>
                 <path d="M136.49,44.18c-9.51,0-11.88,9.91-11.88,16.23,0,7.83,3.59,15.94,11.94,15.94s11.94-8.12,11.94-15.94c0-6.32-2.38-16.23-11.88-16.23"/>
                 <path d="M181.13,76.36v-24.06c0-5.04-2.32-8.12-6.78-8.12-5.16,0-8.99,4.06-12.52,8.12M161.83,44.18v32.18"/>
@@ -111,20 +219,139 @@
                 <path d="M271.34,68.41c-2.49,4.93-6.26,7.94-11.19,7.94-7.88,0-11.02-7.65-11.02-16.17,0-9.74,3.88-16,10.96-16,4.23,0,8.12,2.2,11.25,7.77M271.34,33.17v43.19"/>
                 <path d="M284.79,58.67h22.26c0-6.49-2.15-14.49-10.55-14.49-7.25,0-11.83,6.03-11.83,16.23,0,9.22,3.71,15.94,12,15.94,5.45,0,8.46-2.96,9.91-6.38"/>
                 <path d="M319.34,82.56c1.97,3.3,5.28,4.81,9.57,4.81,6.67,0,10.49-3.71,10.49-10.9v-32.29M339.4,51.95c-3.13-5.57-7.01-7.77-11.19-7.77-7.13,0-11.02,6.26-11.02,15.42,0,8.23,3.13,15.6,11.02,15.6,4.93,0,8.7-2.78,11.19-7.36"/>
-                <rect x="8.07" y="8.91" width="360.86" height="99.17" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.32"/>
+                <rect x="8.07" y="8.91"
+                      width="360.86" height="99.17"/>
             </svg>
         </div>
+        
+        <p class="summary">
+            Borne de sondage anonyme pour espaces publics et événements :<br>
+            1 question manuscrite, 6 réponses possibles,<br>
+            des résultats consultables sur téléphone ou ordinateur.<br>
+            Interface ouverte, sous licence libre (CC-BY-SA).
+        </p>
 
-        <p class="summary">Borne de sondage anonyme pour les espaces publics et les événements : une question écrite à la main, six réponses possibles, des résultats consultables depuis un téléphone ou un ordinateur. Interface ouverte, sous licence libre (CC-BY-SA).</p>
+        <nav class="steps" aria-label="Découvrir Sontadeg">
+            
+            <a class="step" href="DIY.html">
 
-        <a class="btn" href="https://tonyvpck.github.io/Sontadeg/install/install.html">
-            <svg viewBox="286.8 404 22.4 33.8" aria-hidden="true"><polygon points="292.81 436.79 294.48 422.37 287.81 422.37 292.81 405.02 301.02 405.02 296.92 418.06 304.73 418.06 292.81 436.79"/><polyline points="304.48 405.02 300.38 418.06 308.19 418.06 296.27 436.79"/></svg>
-            Installer le firmware
-        </a>
+                <span class="step-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 119 123"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.5"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+                      <rect class="cls-3" x="10.91" y="11.91" width="99.17" height="99.17"/>
+  <g>
+    <path class="cls-2" d="M25.07,74.71h5.32c7.98,0,15.38-4.12,15.42-14.58.04-9.04-5.5-14.67-14.23-14.67h-6.51M25.07,74.71v-29.25"/>
+    <line class="cls-2" x1="55.78" y1="75.16" x2="55.78" y2="45.02"/>
+    <path class="cls-2" d="M64.2,45.02l10.41,17.02,10.64-17.02M74.61,75.16v-13.12"/>
+    <path class="cls-2" d="M94.11,71.97c-1.02,0-1.77.8-1.77,1.82s.8,1.82,1.82,1.82,1.77-.8,1.77-1.82-.75-1.82-1.73-1.82M94.2,67.18v-22.16"/>
+  </g>
+  <line class="cls-1" x1="25.07" y1="86.8" x2="95.93" y2="86.8"/>
+  <line class="cls-1" x1="25.07" y1="34.25" x2="95.93" y2="34.25"/>
+</svg>
+                </span>
+
+                <span class="step-number">01</span>
+                <span class="step-title">Fabriquer</span>
+                <span class="step-description">
+                    Construire sa borne
+                </span>
+
+            </a>
+
+            <a class="step"
+               href="https://tonyvpck.github.io/Sontadeg/install/install.html">
+
+                <span class="step-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 119 123"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.5"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+                          <rect class="cls-3" x="9.85" y="11.91" width="99.17" height="99.17" transform="translate(120.94 2.06) rotate(90)"/>
+  <rect class="cls-4" x="9.98" y="11.91" width="99.17" height="99.17"/>
+  <polygon class="cls-3" points="77.13 23.66 57.56 23.66 41.74 51.15 57.02 51.15 44.42 75.04 77.13 42.96 62.26 42.96 77.13 23.66"/>
+  <line class="cls-1" x1="82.61" y1="55.48" x2="95.64" y2="55.48"/>
+  <line class="cls-1" x1="79.95" y1="49.83" x2="89.12" y2="44.13"/>
+  <line class="cls-1" x1="38.71" y1="55.53" x2="28.87" y2="55.53"/>
+  <line class="cls-1" x1="37.18" y1="46.86" x2="32.79" y2="44.13"/>
+  <polyline class="cls-2" points="54.94 54.4 34.37 61.53 34.37 86.82 59.46 95.56 84.75 86.82 84.75 61.53 65.11 54.99"/>
+  <polyline class="cls-2" points="59.46 95.56 59.46 70.57 84.75 61.53"/>
+  <line class="cls-2" x1="52" y1="67.88" x2="59.46" y2="70.57"/>
+  <line class="cls-2" x1="34.37" y1="61.53" x2="48.83" y2="66.74"/>
+</svg>
+                </span>
+
+                <span class="step-number">02</span>
+                <span class="step-title">Installer</span>
+                <span class="step-description">
+                    Flasher le firmware
+                </span>
+
+            </a>
+
+            <a class="step" href="visualisation.html">
+
+                <span class="step-icon">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 119 123"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.5"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <rect x="9.66" y="11.91"
+                              width="99.17" height="99.17"
+                              transform="translate(120.75 2.25) rotate(90)"/>
+                        <rect x="9.79" y="11.91"
+                              width="99.17" height="99.17"/>
+                        <path d="M91 34.35s3.17-1.83 7.21 5.17c4.04 7 .87 8.83.87 8.83"/>
+                        <rect x="84.65" y="34.23"
+                              width="11.13" height="19.79"
+                              transform="translate(-9.98 51.02) rotate(-30)"/>
+                        <polyline points="81.36 39.91 56.56 54.23 64.65 68.23 89.44 53.91"/>
+                        <polyline points="57.32 55.53 40.13 65.46 46.7 76.85 63.89 66.92"/>
+                        <polyline points="40.87 66.74 24.14 76.4 29.23 85.22 45.96 75.56"/>
+                        <polyline points="29.23 85.22 30.36 87.17 25.24 90.12 17.9 77.41 23.02 74.45 24.14 76.4"/>
+                        <line x1="80.45" y1="19.45" x2="80.45" y2="23.66"/>
+                        <line x1="82.55" y1="21.55" x2="78.35" y2="21.55"/>
+                        <line x1="89.96" y1="88.58" x2="96.25" y2="94.87"/>
+                        <line x1="96.25" y1="88.58" x2="89.96" y2="94.87"/>
+                        <line x1="25.7" y1="46.86" x2="22.73" y2="49.83"/>
+                        <line x1="25.7" y1="49.83" x2="22.73" y2="46.86"/>
+                        <line x1="84.73" y1="75.57" x2="84.73" y2="79.77"/>
+                        <line x1="86.83" y1="77.67" x2="82.63" y2="77.67"/>
+                        <line x1="39.47" y1="25.38" x2="39.47" y2="34.28"/>
+                        <line x1="43.92" y1="29.83" x2="35.02" y2="29.83"/>
+                        <line x1="51.92" y1="99.32" x2="48.95" y2="102.3"/>
+                        <line x1="51.92" y1="102.3" x2="48.95" y2="99.32"/>
+                    </svg>
+
+                </span>
+
+                <span class="step-number">03</span>
+                <span class="step-title">Explorer</span>
+                <span class="step-description">
+                    Visualiser les résultats
+                </span>
+
+            </a>
+
+        </nav>
+
     </main>
-
     <footer>
-        <p>SONTADEG, interface ouverte pour enquêtes locales<br>Edulab Rennes 2, Labfab | Septembre 2026 v1.2 [CC-BY-SA]</p>
+        <p>
+            SONTADEG, interface ouverte pour enquêtes locales<br>
+            Edulab Rennes 2, Labfab | Septembre 2026 v1.2 [CC-BY-SA]
+        </p>
     </footer>
 
 </body>
