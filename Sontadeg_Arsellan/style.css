@@ -1,0 +1,538 @@
+/* ---------------------------------------------------------------------------------------------- */
+/* SONTADEG ARSELLAN - FEUILLE DE STYLE                                                           */
+/*                                                                                                */
+/* Rôle : tout le style de la page (thème sombre, couleurs de la borne, mise en page).            */
+/* Sections : BASE (variables), ACCUEIL, PANNEAUX (bandeau, panneau latéral), GRAPHIQUES,         */
+/*   TÉLÉPHONE.                                                                                   */
+/* La mise en page téléphone (≤ 700 px de large ou ≤ 500 px de haut) doit rester identique à      */
+/*   isPhone() dans graphiques.js.                                                                */
+/* ---------------------------------------------------------------------------------------------- */
+
+/*- BASE -----------------------------------------------------------------------------------------*/
+/* Variables de thème (palette sombre, couleurs des boutons A–F), réinitialisation et styles globaux.
+   Attention : les couleurs --btn-* existent aussi dans BUTTON_COLORS (js/base.js) : modifier les deux. */
+/* Variables de thème, utilisées par toutes les sections suivantes. */
+:root{
+  /* Palette alignée sur l'interface du terminal Sontadeg (fond #3D3D3D, texte blanc) */
+  --ink-950:#242424;
+  --ink-900:#2C2C2C;
+  --panel:#353535;
+  --panel-raised:#404040;
+  --paper-50:#F2F2F2;
+  --paper-70:#BEBEBE;
+  --paper-90:#8A8A8A;
+  --line-700:#4A4A4A;
+  --line-500:#5C5C5C;
+  /* Couleurs réservées à la différenciation des courbes/boutons dans les graphiques */
+  --btn-A:#E3A34E;
+  --btn-B:#4FA8A0;
+  --btn-C:#9C86D6;
+  --btn-D:#D97C93;
+  --btn-E:#5F9BD1;
+  --btn-F:#8FBF63;
+  --spam:#8A8A8A;
+  --font-display:Arial, Helvetica, sans-serif;
+  --font-body:Arial, Helvetica, sans-serif;
+  --radius:5px;
+}
+
+/* Réinitialisation de base : boîtes à bordures incluses, marges nulles,
+   corps sombre avec léger halo ambré en haut à gauche. */
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(ellipse 1200px 600px at 20% -10%, rgba(227,163,78,0.05), transparent),
+    var(--ink-950);
+  color:var(--paper-50);
+  font-family:var(--font-body);
+  font-size:14px;
+  line-height:1.5;
+  min-height:100vh;
+}
+
+/* Sélection de texte et focus clavier (visible uniquement au clavier) aux couleurs du bouton A. */
+::selection{background:var(--btn-A);color:var(--ink-950);}
+
+:focus-visible{
+  outline:2px solid var(--btn-A);
+  outline-offset:2px;
+}
+
+/* Accessibilité : neutralise animations et transitions pour qui préfère un mouvement réduit. */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+}
+
+/* Les boutons reprennent la police de la page (le navigateur impose sinon la sienne). */
+button{font-family:inherit;}
+
+/*- ACCUEIL --------------------------------------------------------------------------------------*/
+/* Écran d'accueil (avant chargement), sélecteur de langue, mention de confidentialité, boutons de chargement.
+   Classes produites par js/interface.js, js/langues.js et js/base.js. */
+/*- SÉLECTEUR DE LANGUE (LANGPICKER) -------------------------------------------------------------*/
+.lang-pick{position:relative; display:inline-block; align-self:center;}
+.lang-pick > button{background:transparent; border:0; color:var(--paper-90); font:inherit; font-size:13px; letter-spacing:0.08em; padding:6px 8px; cursor:pointer;}
+.lang-pick > button:hover, .lang-pick.open > button{color:var(--paper-50);}
+.lang-menu{position:absolute; top:100%; right:0; z-index:50; min-width:110px; background:var(--ink-900); border:1px solid var(--line-700); border-radius:var(--radius); padding:4px 0; box-shadow:0 4px 14px rgba(0,0,0,.4);}
+.lang-menu button{display:block; width:100%; text-align:left; background:transparent; border:0; color:var(--paper-90); font:inherit; font-size:12px; padding:6px 12px; cursor:pointer; white-space:nowrap;}
+.lang-menu button:hover{background:var(--line-700); color:var(--paper-50);}
+.lang-menu button.on{color:var(--paper-50); cursor:default;}
+/*- ÉCRAN D'ACCUEIL ------------------------------------------------------------------------------*/
+/* Bandeau central (logo, message) et carte des boutons de chargement. */
+.empty-banner{
+  position:relative;
+  padding:40px 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.empty-banner .lang-pick{position:absolute; top:14px; right:18px;}
+.welcome-logo{width:312px; margin:0 0 20px;}
+.welcome-logo svg{width:100%; height:auto; display:block;}
+/* Mention de confidentialité (privacyNote) : une ligne dans un cadre, icône « i » à gauche. */
+.privacy-note{display:flex; align-items:center; justify-content:center; gap:8px; margin:16px auto 0; max-width:560px; width:fit-content; padding:8px 14px; border:1px solid var(--line-700); border-radius:var(--radius); font-size:12px; line-height:1.4; color:var(--paper-70); text-align:center;}
+.privacy-note svg{flex:none; width:15px; height:15px;}
+.empty-layout-card p.privacy-note{font-size:12px; color:var(--paper-70); margin:18px auto 0; max-width:100%;}
+.empty-banner-msg{color:var(--paper-70); font-size:13.5px; max-width:420px; margin:0 0 18px;}
+/* Zone sous le bandeau d'accueil, qui contient la carte de chargement. */
+.empty-layout{
+  background:var(--ink-950);
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:40px 20px;
+}
+.empty-layout-card{
+  max-width:420px;
+  width:100%;
+  text-align:center;
+}
+.empty-layout-card .k{
+  font-family:var(--font-display);
+  font-size:11px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--paper-90);
+  margin:0 0 8px;
+}
+.empty-layout-card p{
+  color:var(--paper-70);
+  font-size:13.5px;
+  margin:0 0 20px;
+}
+/* Bouton de choix de fichier : le <input type=file> est masqué, le libellé/l'icône sert de bouton ;
+   .icon-only = icône seule. */
+.file-btn{
+  background:var(--panel-raised);
+  border:1px solid var(--line-500);
+  color:var(--paper-50);
+  padding:15px 24px 15px 12px;
+  border-radius:var(--radius);
+  cursor:pointer;
+  font-size:13px;
+  font-weight:500;
+  white-space:nowrap;
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+}
+.file-btn:hover{border-color:var(--btn-A); color:var(--btn-A);}
+.file-btn input[type=file]{display:none;}
+.file-btn.icon-only{
+  padding:0;
+  background:transparent;
+  border:none;
+  border-radius:0;
+}
+.file-btn.icon-only:hover{border-color:transparent; opacity:0.75;}
+.file-btn.icon-only .btn-icon{width:56px; height:56px;}
+.btn-icon{width:34px; height:34px; flex:none; display:block;}
+.btn-icon svg{width:100%; height:100%; display:block;}
+/* Message d'erreur de lecture d'un fichier, affiché sous le bouton concerné. */
+.inline-error{
+  color:var(--btn-D);
+  font-size:12.5px;
+  margin-top:10px;
+}
+
+/*- PANNEAUX -------------------------------------------------------------------------------------*/
+/* Application chargée : bandeau (logo, statistiques, résumé), panneau latéral de filtres, touches A–F, champs.
+   Les règles pour téléphone sont dans la section TÉLÉPHONE (en fin de fichier). */
+/*- COQUE DE L'APPLICATION (MASQUÉE TANT QU'AUCUN FICHIER N'EST CHARGÉ) --------------------------*/
+#app{display:none;}
+#app.active{display:block;}
+
+/*- BANDEAU --------------------------------------------------------------------------------------*/
+/* Logo, icônes de vues, statistiques, question et résumé des réponses. */
+.banner{
+  border-bottom:1px solid var(--line-700);
+  padding:18px 24px 20px;
+  background:var(--panel);
+}
+.banner-top{
+  display:flex;
+  align-items:flex-start;
+  gap:32px;
+  flex-wrap:wrap;
+}
+.banner-icon-group{
+  margin-left:auto;
+  display:flex;
+  gap:8px;
+  flex:none;
+}
+.view-mode-toggle{
+  width:34px; height:34px;
+  padding:0;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  flex:none;
+  opacity:0.6;
+  border-radius:2px;
+  transition:opacity 0.12s, box-shadow 0.12s;
+}
+.view-mode-toggle svg{width:100%; height:100%; display:block;}
+.view-mode-toggle:hover{opacity:0.85;}
+.view-mode-toggle.active{opacity:1; box-shadow:0 0 0 1.5px var(--paper-50);}
+.banner-brand{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.brand-logo{
+  display:block;
+  height:42px;
+}
+.brand-logo svg{
+  height:42px;
+  width:auto;
+  display:block;
+}
+.banner-stats-row{
+  display:flex;
+  align-items:flex-start;
+  gap:26px;
+  flex-wrap:wrap;
+}
+.stat-block{display:flex; flex-direction:column; gap:1px;}
+.stat-block .top{font-size:15px; font-weight:700; color:var(--paper-50); white-space:nowrap;}
+.stat-block .top.muted{color:var(--paper-90); font-weight:400;}
+.stat-block .bottom{font-size:11px; color:var(--paper-70); white-space:nowrap;}
+.date-block .top, .date-block .bottom{font-size:13px; font-weight:600; color:var(--paper-50);}
+.date-block.date-warn .top, .date-block.date-warn .bottom{cursor:help;}   /* dates invraisemblables : monochrome, signalées par le triangle ⚠ */
+.stat-block.warn-block .top, .stat-block.warn-block .bottom{cursor:help;}   /* lignes du journal ignorées : monochrome, comme le reste du bandeau */
+.banner-results{
+  margin-top:16px;
+  display:flex;
+  align-items:flex-start;
+  gap:32px;
+}
+.banner-left-col{flex:0 0 33%;}
+.banner-question{
+  font-size:19px;
+  font-weight:700;
+  color:var(--paper-50);
+}
+.banner-subtitle{
+  margin-top:6px;
+  font-size:12px;
+  color:var(--paper-70);
+  font-style:italic;
+  overflow-wrap:anywhere;                       /* un sous-titre sans espace ne déborde pas */
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;   /* coupé après 2 lignes (texte complet au survol) */
+  line-clamp:2;
+}
+.banner-bars{flex:1; min-width:0;}
+
+/*- DISPOSITION : PANNEAU LATÉRAL (260 PX) + ZONE DES GRAPHIQUES ---------------------------------*/
+.layout{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  min-height:calc(100vh - 90px);
+}
+
+.sidebar{
+  border-right:1px solid var(--line-700);
+  background:var(--panel);
+  padding:20px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+/* Titres de section du panneau latéral (FILTRES, etc.). */
+.side-section h2{
+  font-family:var(--font-display);
+  font-size:11px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--paper-90);
+  margin:0 0 10px;
+}
+/*- TOUCHES A–F ----------------------------------------------------------------------------------*/
+/* Cliquables comme filtres ; .on = active (fond coloré par le JS), .spam = tirets (Z), .sum = double trait (Σ). */
+.keycaps{display:flex; flex-wrap:wrap; gap:3px;}
+.keycap{
+  width:25px; height:25px;
+  border-radius:5px;
+  border:1px solid var(--line-500);
+  background:var(--ink-900);
+  color:var(--paper-70);
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:11px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  transition:box-shadow 0.12s, background 0.12s, color 0.12s, border-color 0.12s;
+  position:relative;
+}
+.keycap.on{
+  color:var(--ink-950);
+  border-color:transparent;
+}
+.keycap .count-tag{
+  position:absolute;
+  bottom:-13px;
+  font-size:8px;
+  font-family:var(--font-body);
+  color:var(--paper-90);
+}
+.keycap.spam{
+  border-style:dashed;
+}
+/* Touches « moyennes » : lettre surmontée d'une barre (macron), comme x̄ en statistiques. */
+.keycap .ov{text-decoration:overline; text-decoration-thickness:1.5px;}
+.keycap.avg.sum{border-style:double; border-width:3px;}
+.keycap.avg.spam{border-style:dashed;}
+#avg-keys{margin-bottom:24px;}
+.keycap.sum{
+  border-style:double;
+  border-width:3px;
+  font-size:13px;
+}
+.keycap.sum.on{
+  color:var(--ink-950);
+}
+
+/*- CHAMPS DE FORMULAIRE DU PANNEAU (ÉTIQUETTE + LISTE, DATE OU HEURE) ---------------------------*/
+.field{display:flex; flex-direction:column; gap:6px; margin-top:14px;}
+.field label{font-size:12px; color:var(--paper-70);}
+.block-editor .be-item.be-check{justify-content:flex-start; gap:8px; cursor:pointer;}
+.block-editor .be-check input{margin:0;}
+.field .lbl-row{display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:18px;}
+.reset-link{display:inline-flex; align-items:center; gap:4px; background:none; border:0; padding:0; font:inherit; font-size:11.5px; color:var(--paper-70); cursor:pointer;}
+.reset-link:hover{color:var(--paper-50); text-decoration:underline;}
+.reset-link svg{width:12px; height:12px; flex:none;}
+.field input.is-auto{color:var(--paper-70);}
+.field input.is-auto:focus{color:var(--paper-50);}
+.field select, .field input[type=date], .field input[type=time]{
+  background:var(--ink-900);
+  border:1px solid var(--line-500);
+  color:var(--paper-50);
+  padding:7px 8px;
+  border-radius:var(--radius);
+  font-size:12.5px;
+  font-family:var(--font-body);
+  width:100%;
+}
+.field.tight{margin-top:8px;}
+#context-controls > .field:first-child{margin-top:0;}
+#keycaps{margin-bottom:16px;}
+/* Options : rectangles distincts, fond légèrement plus sombre que le panneau au repos ;
+   l'option choisie est cerclée de blanc (arrondi minimal), comme les icônes du bandeau. */
+/*- RANGÉES DE BOUTONS À CHOIX UNIQUE ------------------------------------------------------------*/
+.toggle-row{display:flex; gap:4px;}
+.toggle-row button{
+  flex:1; background:var(--ink-900); color:var(--paper-70);
+  border:1px solid transparent; border-radius:2px;
+  padding:7px 8px; font-size:12px; cursor:pointer;
+  transition:background 0.12s, color 0.12s, border-color 0.12s;
+}
+.toggle-row button:hover{background:var(--ink-950); color:var(--paper-50);}
+.toggle-row button.on{border-color:var(--paper-50); color:var(--paper-50);}
+.toggle-row button:disabled{opacity:0.35; cursor:not-allowed;}
+
+/* Note explicative en petits caractères sous un réglage. */
+.note{font-size:11.5px; color:var(--paper-90); line-height:1.5; margin-top:10px;}
+
+/*- GRAPHIQUES -----------------------------------------------------------------------------------*/
+/* Zone de visualisation : titres de vue, conteneurs SVG, outils (zoom, export), éditeur de bloc, légendes.
+   Les SVG sont dessinés en JS (graphiques.js, vues.js) avec les classes ci-dessous. */
+/*- ZONE DES GRAPHIQUES --------------------------------------------------------------------------*/
+.viz-zone{padding:26px 30px 60px; min-width:0; position:relative;}
+.viz-export{position:absolute; top:22px; right:26px;}
+.viz-zone .view-heading{padding-right:48px;}
+/* Titre de la vue et sous-titre explicatif. */
+.view-heading{margin:0 0 4px;}
+.view-heading h3{
+  font-family:var(--font-display);
+  font-size:16px;
+  margin:0;
+  font-weight:700;
+}
+.view-heading h3:last-child{margin-bottom:22px;}
+.view-heading p{color:var(--paper-70); font-size:12.5px; margin:4px 0 22px;}
+
+/* Message affiché quand il n'y a rien à tracer (filtres trop stricts, pas de données). */
+.empty-state{
+  border:1px dashed var(--line-500);
+  border-radius:10px;
+  padding:40px 24px;
+  text-align:center;
+  color:var(--paper-70);
+  font-size:13px;
+}
+
+/* Conteneur d'un graphique : défilement horizontal ;
+   .is-scrolled place l'axe fixe à côté d'une zone qui défile (.chart-scroller). */
+.chart-wrap{width:100%; overflow-x:auto;}
+.chart-wrap.is-scrolled{display:flex; overflow:visible;}
+.chart-wrap.is-scrolled > svg.axis-fixed{flex:none; display:block;}
+/* Barre d'outils en haut à droite de la zone : export, boutons de vue, pastilles (.viz-chip). */
+.viz-tools{position:absolute; top:22px; right:26px; display:flex; align-items:center; gap:4px; z-index:3;}
+.viz-tools .viz-export{position:static;}
+.viz-tools .view-mode-toggle:disabled{opacity:0.25; cursor:default;}
+.viz-chip{background:transparent; border:1px solid var(--line-500); color:var(--paper-70); border-radius:3px; padding:3px 9px; margin-right:6px; font:inherit; font-size:11.5px; cursor:pointer;}
+.viz-chip:hover{border-color:var(--paper-50); color:var(--paper-50);}
+/* Éditeur flottant de bloc (jour, session, période) : bornes horaires, masquer, ajuster aux votes.
+   Positionné en fixe par le JS. */
+.block-editor{position:fixed; z-index:50; min-width:210px; padding:10px 12px 9px; background:var(--ink-900); border:1px solid var(--line-500); border-radius:var(--radius); box-shadow:0 6px 18px rgba(0,0,0,0.45); font-size:12px; color:var(--paper-70);}
+.block-editor .be-title{font-size:12px; font-weight:bold; color:var(--paper-50); margin:0 0 8px;}
+.block-editor .be-row{display:flex; align-items:center; gap:6px;}
+.block-editor .be-row span{color:var(--paper-90); font-size:12px;}
+.block-editor .be-row{justify-content:center;}
+.block-editor .be-row input{flex:0 0 auto; width:auto; background:transparent; border:0; outline:0; box-shadow:none; padding:2px 0; color:var(--paper-90); font:inherit; font-size:13px; color-scheme:dark; text-align:center;}
+.block-editor .be-row input::-webkit-calendar-picker-indicator{opacity:0.55; cursor:pointer; margin-left:4px;}
+.block-editor .be-row input::-webkit-calendar-picker-indicator:hover{opacity:0.9;}
+.block-editor .be-row input::-webkit-datetime-edit-fields-wrapper{padding:0;}
+.block-editor .be-row input::-webkit-datetime-edit-hour-field:focus,.block-editor .be-row input::-webkit-datetime-edit-minute-field:focus,.block-editor .be-row input::-webkit-datetime-edit-second-field:focus{background:var(--line-500); color:var(--paper-50); outline:0;}
+.block-editor .be-links{display:flex; justify-content:center; align-items:center; gap:14px; margin-top:9px;}
+.block-editor a.active{color:var(--paper-50); text-decoration:none; border-bottom:1px solid var(--paper-50);}
+.block-editor a{color:var(--paper-90); text-decoration:underline; cursor:pointer; font-size:11.5px;}
+.block-editor a:hover{color:var(--paper-50);}
+.block-editor a.disabled{opacity:0.35; pointer-events:none;}
+.block-editor .be-item{display:flex; justify-content:space-between; gap:16px; padding:3px 0;}
+/* Petits boutons dans les SVG : réglage d'un bloc (.cfg-btn) et coller/décoller une session (.glue-btn). */
+.cfg-btn .box{fill:var(--ink-900); stroke:var(--line-500);}
+.cfg-btn line{stroke:var(--paper-70); stroke-width:1.3; stroke-linecap:round; pointer-events:none;}
+.cfg-btn:hover .box{stroke:var(--paper-50);}
+.cfg-btn:hover line{stroke:var(--paper-50);}
+.cfg-btn.on .box{fill:var(--ink-950); stroke:var(--paper-70);}
+.cfg-btn.on line{stroke:var(--paper-90);}
+.glue-btn:hover rect{stroke:var(--paper-50);}
+.glue-btn text{fill:var(--paper-90); font-size:13px; pointer-events:none;}
+/* Barre d'actions sur les sessions collées (mode REL). */
+.glue-bar{display:flex; gap:6px; align-items:center; justify-content:flex-end; margin:0 0 8px; font-size:11.5px; color:var(--paper-90);}
+.glue-bar button{background:transparent; border:1px solid var(--line-500); color:var(--paper-70); border-radius:3px; padding:3px 9px; font:inherit; cursor:pointer;}
+.glue-bar button:hover{border-color:var(--paper-50); color:var(--paper-50);}
+/* Curseur de zoom horizontal (collé en bas de l'écran) puis vertical (.vzoom-ctl, à droite) ;
+   .off = désactivé en mode « adapter ». */
+.zoom-ctl{position:sticky; bottom:14px; z-index:4; display:flex; align-items:center; gap:8px; width:fit-content; margin:6px 0 -6px auto; padding:4px 10px; background:var(--ink-950); border-radius:var(--radius); box-shadow:0 0 8px 4px var(--ink-950); font-size:11.5px; color:var(--paper-70); cursor:default;}
+.zoom-ctl input{-webkit-appearance:none; appearance:none; width:120px; height:16px; background:transparent; cursor:pointer; margin:0;}
+.zoom-ctl input:focus{outline:none;}
+.zoom-ctl input::-webkit-slider-runnable-track{height:1px; background:var(--paper-70); opacity:0.6;}
+.zoom-ctl input::-moz-range-track{height:1px; background:var(--paper-70); opacity:0.6;}
+.zoom-ctl input::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:3px; height:14px; margin-top:-7px; border-radius:1px; background:var(--paper-90); border:0;}
+.zoom-ctl input::-moz-range-thumb{width:3px; height:14px; border-radius:1px; background:var(--paper-90); border:0;}
+.zoom-ctl input:hover::-webkit-slider-thumb{background:var(--paper-50);}
+.zoom-ctl input:hover::-moz-range-thumb{background:var(--paper-50);}
+.zoom-ctl .fit-btn{width:24px; height:24px; padding:3px; display:flex; align-items:center; justify-content:center; background:transparent; border:1px solid transparent; border-radius:3px; color:var(--paper-70); cursor:pointer;}
+.zoom-ctl .fit-btn svg{width:100%; height:100%; display:block;}
+.zoom-ctl .fit-btn:hover{color:var(--paper-50);}
+.zoom-ctl .fit-btn.on{color:var(--paper-50); border-color:var(--line-500); background:var(--ink-900);}
+.vzoom-ctl{position:absolute; right:0; width:30px; z-index:4; display:flex; flex-direction:column; align-items:center; gap:6px; font-size:11px; color:var(--paper-90); cursor:default;}
+.vzoom-ctl output{white-space:nowrap; font-size:10px; letter-spacing:-0.2px;}
+.vzoom-ctl input{-webkit-appearance:none; appearance:none; writing-mode:vertical-lr; direction:rtl; flex:none; height:120px; width:16px; background:transparent; cursor:pointer; margin:0;}
+.vzoom-ctl input:focus{outline:none;}
+.vzoom-ctl input::-webkit-slider-runnable-track{width:1px; background:var(--paper-70); opacity:0.6;}
+.vzoom-ctl input::-moz-range-track{width:1px; background:var(--paper-70); opacity:0.6;}
+.vzoom-ctl input::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:14px; height:3px; margin-left:-7px; border-radius:1px; background:var(--paper-90); border:0;}
+.vzoom-ctl input::-moz-range-thumb{width:14px; height:3px; border-radius:1px; background:var(--paper-90); border:0;}
+.vzoom-ctl .fit-btn{width:24px; height:24px; padding:3px; display:flex; align-items:center; justify-content:center; background:transparent; border:1px solid transparent; border-radius:3px; color:var(--paper-70); cursor:pointer;}
+.vzoom-ctl .fit-btn svg{width:100%; height:100%; display:block; transform:rotate(90deg);}
+.vzoom-ctl .fit-btn:hover{color:var(--paper-50);}
+.vzoom-ctl .fit-btn.on{color:var(--paper-50); border-color:var(--line-500); background:var(--ink-900);}
+.vzoom-ctl.off input{opacity:0.35;}
+.vzoom-ctl.off input::-webkit-slider-thumb{background:transparent;}
+.vzoom-ctl.off input::-moz-range-thumb{background:transparent;}
+.vzoom-ctl.off output{opacity:0.35;}
+.zoom-ctl.off input{opacity:0.35;}
+.zoom-ctl.off input::-webkit-slider-thumb{background:transparent;}
+.zoom-ctl.off input::-moz-range-thumb{background:transparent;}
+.zoom-ctl.off output{opacity:0.35;}
+.zoom-ctl output{min-width:38px; text-align:right; color:var(--paper-90);}
+/* Zone défilante d'un graphique : barre de défilement masquée par .no-bar. */
+.chart-scroller.no-bar{scrollbar-width:none; padding-bottom:0;}
+.chart-scroller.no-bar::-webkit-scrollbar{display:none;}
+.chart-scroller{flex:1; min-width:0; overflow-x:auto; padding-bottom:6px;}
+/* Texte et traits des graphiques SVG (étiquettes, valeurs, axes, quadrillage). */
+svg.chart{display:block; font-family:var(--font-body);}
+.bar-label{fill:var(--paper-70); font-size:11px;}
+.bar-value{fill:var(--paper-50); font-size:11px; font-family:var(--font-body);}
+.axis-label{fill:var(--paper-90); font-size:10px;}
+.grid-line{stroke:var(--line-700); stroke-width:1;}
+
+/* Chaleur/Points/Bâtons : un groupe (bande) par bouton, avec son titre coloré. */
+.heatmap-groups{display:flex; flex-direction:column; gap:2px;}
+.heatmap-group svg.chart{display:block;}   /* pas d'espace de ligne sous le SVG : les bandes se rapprochent */
+.heatmap-group-title{
+  display:flex; align-items:center; gap:6px;
+  font-size:12px; color:var(--paper-50); margin-bottom:8px;
+}
+.heatmap-group-title .sw{width:9px;height:9px;border-radius:2px;}
+.heatmap-group-title .count{color:var(--paper-90); font-size:11px;}
+
+/* Apparition douce des vues (désactivée par prefers-reduced-motion). */
+.fade-in{animation:fadeIn 0.25s ease;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+/* Pied de page (texte posé par applyStatic). */
+footer.app-footer{
+  padding:20px 30px 40px;
+  text-align:center;
+  color:var(--paper-90);
+  font-size:11px;
+  border-top:1px solid var(--line-700);
+}
+
+/*- TÉLÉPHONE ------------------------------------------------------------------------------------*/
+/* Adaptation aux petits écrans (≤ 700 px de large ou ≤ 500 px de haut, y compris paysage) : résumé compact,
+   panneau latéral replié, bouton « Réglages » qui ouvre le reste dans un panneau en bas d'écran.
+   Surcharge les sections PANNEAUX et GRAPHIQUES : doit rester en fin de fichier.
+   PIÈGE : la condition du @media doit rester identique à isPhone() (js/graphiques.js). */
+/* Hors petit écran : bouton Réglages et en-tête de panneau masqués ;
+   .side-extra n'ajoute pas de boîte (display:contents). */
+.settings-btn, .sheet-head{display:none;}
+.side-extra{display:contents;}
+.side-head{display:block;}
+/* Petit écran : bandeau resserré, une seule colonne, pied de page réduit. */
+@media (max-width:700px), (max-height:500px){
+  .banner{padding:12px 14px 14px;}
+  .banner-top{gap:8px 14px;}
+  .brand-logo, .brand-logo svg{height:32px;}
+  .banner-stats-row{order:3; flex-basis:100%; gap:18px;}
+  .banner-icon-group{order:2; gap:4px;}
+  .view-mode-toggle{width:30px; height:30px;}
+  .banner-results{flex-direction:column; gap:10px; margin-top:10px;}
+  .banner-left-col{flex:none; width:100%;}
+  .banner-bars{flex:none; width:100%;}
+  .banner-question{font-size:17px;}
+  .layout{display:block; min-height:0;}
+  .sidebar{border-right:0; border-bottom:1px solid var(--line-700); padding:10px 14px 12px; gap:8px;}
+  .side-head{display:flex; align-items:center; justify-content:space-between;}
+  .side-head h2{margin:0 0 6px;}
+  .settings-btn, .sheet-close{display:inline-flex; background:transparent; border:1px solid var(--line-500); color:var(--paper-50); border-radius:3px; padding:5px 12px; font:inherit; font-size:12px; cursor:pointer;}
+  .side-extra{display:none;}
+  /* Panneau « Réglages » ouvert : feuille fixée en bas d'écran, défilante, avec son en-tête collant. */
+  body.settings-open .side-extra{display:flex; flex-direction:column; gap:16px; position:fixed; left:0; right:0; bottom:0; max-height:64vh; overflow-y:auto; background:var(--panel); border-top:1px solid var(--line-500); border-radius:12px 12px 0 0; box-shadow:0 -10px 28px rgba(0,0,0,0.55); padding:0 16px 28px; z-index:60;}
+  body.settings-open .sheet-head{display:flex; position:sticky; top:0; z-index:1; align-items:center; justify-content:space-between; background:var(--panel); padding:12px 0 8px;}
+  body.settings-open .sheet-head h2{margin:0;}
+  /* Marge droite élargie pour laisser la place au curseur de zoom vertical. */
+  .viz-zone{padding:14px 42px 36px 8px;}
+  .viz-export{top:12px; right:42px;}
+  .vzoom-ctl output{font-size:9px;}
+  footer.app-footer{padding:16px 14px 28px;}
+}
+

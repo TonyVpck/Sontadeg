@@ -1,0 +1,64 @@
+<!-- ------------------------------------------------------------------------------------------ -->
+<!--  ____              _            _                 _                  _ _     novembre 2026 -->
+<!-- / ___|  ___  _ __ | |_ __ _  __| | ___  __ _     / \   _ __ ___  ___| | | __ _ _ __        -->
+<!-- \___ \ / _ \| '_ \| __/ _` |/ _` |/ _ \/ _` |   / _ \ | '__/ __|/ _ | | |/ _` | '_ \       -->
+<!--  ___) | (_) | | | | || (_| | (_| |  __| (_| |  / ___ \| |  \__ |  __| | | (_| | | | |      -->
+<!-- |____/ \___/|_| |_|\__\__,_|\__,_|\___|\__, | /_/   \_|_|  |___/\___|_|_|\__,_|_| |_|      -->
+<!-- SONTADEG ARSELLAN                      |___/                                               -->
+<!-- Explorateur de données pour Sontadeg                                                       -->
+<!--                                                                                            -->
+<!-- Design général par Tony Vanpoucke (scénario des vues, UX et svg)                           -->
+<!-- Code créé avec assistance de Claude (je suis bien trop mauvais en JS)                       -->
+<!--     Remerciement pour son aide généreuse : Michal Parusinski                               -->
+<!--                                                                                            -->
+<!-- Imaginé à l'Edulab Rennes 2, membre Labfab - RENNES                                          -->
+<!-- Tuto wiki : http://sitededocaremplir.com                                                   -->
+<!-- Licence : CC-By-Sa                                                                         -->
+<!-- ------------------------------------------------------------------------------------------ -->
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sontadeg Arsellan — Explorateur de réponses</title>
+
+    <!-- ===== STYLE ===== -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- ===== APPLICATION ===== -->
+    <!-- Les trois zones sont remplies par le JavaScript (interface.js) -->
+    <div id="app" class="active">
+
+        <!-- Bandeau du haut : logo, chiffres clés, résumé des réponses -->
+        <div class="banner" id="banner-mount"></div>
+
+        <!-- Panneau latéral et zone des graphiques -->
+        <div id="layout-mount"></div>
+
+        <!-- ===== PIED DE PAGE ===== -->
+        <!-- Texte écrit dans js/langues.js (applyStatic), pour être traduit avec le reste de l'interface. -->
+        <footer class="app-footer" id="app-footer"></footer>
+    </div>
+
+    <!-- ===== SCRIPTS =====
+         L'ordre compte : chaque fichier utilise ce que les précédents ont défini. -->
+    <script src="js/langues.js"></script>
+    <script src="js/langue-en.js"></script>
+    <!-- Ajouter une nouvelle langue ici, à la suite des autres langues -->
+
+    <!-- Base, données et calculs du temps -->
+    <script src="js/base.js"></script>
+    <script src="js/donnees.js"></script>
+    <script src="js/temps.js"></script>
+
+    <!-- Dessin, vues et interface (interface.js démarre l'application, il doit rester en dernier) -->
+    <script src="js/graphiques.js"></script>
+    <script src="js/vues.js"></script>
+    <script src="js/interface.js"></script>
+</body>
+
+</html>
